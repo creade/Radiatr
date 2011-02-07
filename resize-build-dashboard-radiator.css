@@ -1,0 +1,108 @@
+    body {
+        background: #111111;
+        background:#111111 none repeat scroll 0% 0%;
+        font-family:Helvetica,Arial,sans-serif;
+        font-size:100px;
+        font-size-adjust:none;
+        font-stretch:normal;
+        font-style:normal;
+        font-variant:normal;
+        font-weight:normal;
+        letter-spacing:0px;
+        line-height:normal;
+        margin:0px 0px 0px 0px;
+    }
+
+    .subject {
+        font-size:125px;
+        font-weight:bold;
+        font-family: Helvetica,Arial,sans-serif;
+        letter-spacing: -2px;
+        text-decoration: none;
+        padding-left: 20px;
+    }
+
+    .userFeedback .subject {
+        font-size:100px;
+    }
+
+    #statuses .statusInWords {
+        font-size:50px;
+        font-family: Helvetica,Arial,sans-serif;
+        letter-spacing: 1px;
+        text-decoration: none;
+        padding-left: 25px;
+    }
+
+    #statuses .changeSetComment {
+        font-size:50px;
+        font-family: Helvetica,Arial,sans-serif;
+        letter-spacing: 1px;
+        text-decoration: none;
+        padding-left: 25px;
+	color: white;
+    }
+
+    #statuses .statusDetails {
+        font-size:25px;
+        font-family: Helvetica,Arial,sans-serif;
+        letter-spacing: 1px;
+        text-decoration: none;
+        padding-left: 25px;
+    }
+
+    #statuses {
+        left:0pt;
+        position:absolute;
+        top:0px;
+        width:1100px;
+        z-index:99;
+    }
+
+    div.status {
+	padding-top: 0px;
+	padding-bottom: 0px;
+	border-bottom: 4px dotted #333333;
+    }
+    abbr {
+        border-bottom:none;
+    }
+    .success {
+        color: #00AA00;
+    }
+    .success .subject {
+        color: #00FF00;
+    }
+    .success .statusDetails {
+        color: #008800;
+    }
+
+    .failure {
+        color: #AA0000;
+    }
+    .failure a {
+        color: #FF0000;
+    }
+    .failure .statusDetails {
+        color: #880000;
+    }
+
+    .building {
+        color: #888888;
+    }
+    .building a {
+        color: #CCCCCC;
+    }
+    .building .statusDetails {
+        color: #666666;
+    }
+    .buildingFromFailedBuild {
+        background-color: #770000;
+    }
+    .logo {
+    }
+    .claim 
+    {
+       background: #FFFF00;
+       color: black;
+    }
