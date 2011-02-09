@@ -1,9 +1,12 @@
 // ==UserScript==
-// @name           build-dashboard-radiator
+// @name           radiatr
 // @namespace      me.fabiopereira
 // @include        file:///*
 // @require   http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.js
+// @require   http://ajax.googleapis.com/ajax/libs/jqueryui/1.5.2/jquery-ui.min.js
 // @require   http://timeago.yarp.com/jquery.timeago.js
+// @require   jquery.fitTextToHeight.js
+
 // ==/UserScript==
 //
 
@@ -12,6 +15,7 @@ refresh();
 function refresh() {
   ping();
   hudson();
+  hudsonFull();
   userFeedback();
   scale();
   setTimeout(refresh, 3000);
@@ -20,42 +24,52 @@ function refresh() {
 function scale() {
 	var importantItems = $('.failure .subject').length + $('.building .subject').length;
 	var boringItems = $('.success .subject').length;
+	var windowHeight = $(window).height();
+	
+	//percentage of screen to devote to Building and Failed builds:
+	var precedence = .65;
+	var subjectScaleMultiplier = 4;
+	var statusScaleMultiplier = 2;
+	var commentScaleMultiplier = 3;
+	var itemParts = subjectScaleMultiplier + 
+					statusScaleMultiplier +
+					commentScaleMultiplier;
+	
+	
 	if (importantItems != 0) {
+		
+		pixelsPerImportant = (windowHeight * precedence ) / importantItems;
+		importantScale = pixelsPerImportant / itemParts;
 
-		windowHeight = $(window).height();
+		pixelsPerBoring = (windowHeight * (1 - precedence) ) / boringItems;
+		boringScale = pixelsPerBoring / itemParts;
 
-		pixelsPerImportant = (windowHeight * (2 / 3)) / importantItems;
-		importantScale = pixelsPerImportant / 6;
-
-		pixelsPerBoring = (windowHeight * (1 / 3)) / boringItems;
-		boringScale = pixelsPerBoring / 6;
-
-
-
-
-		$('.success .subject').css("font-size", boringScale * 2)
-		$('.success .statusInWords ').css("font-size", boringScale)
-		$('.success .changeSetComment').css("font-size", boringScale)
+						
+		$('.success .subject').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (boringScale * subjectScaleMultiplier), fontAdjustIncrement: 1});
+		$('.success .statusInWords').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (boringScale * statusScaleMultiplier), fontAdjustIncrement: 1});
+		$('.success .changeSetComment').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (boringScale * commentScaleMultiplier), fontAdjustIncrement: 1});
 
 					
-		$('.failure .subject').css("font-size", Math.min(importantScale * 2, 160))
-		$('.failure .statusInWords ').css("font-size", Math.min(importantScale, 80))
-		$('.failure .changeSetComment').css("font-size", Math.min(importantScale, 80))
+		$('.failure .subject').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * subjectScaleMultiplier), fontAdjustIncrement: 1});
+		$('.failure .statusInWords').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * statusScaleMultiplier), fontAdjustIncrement: 1});
+		$('.failure .changeSetComment').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * commentScaleMultiplier), fontAdjustIncrement: 1});
 
 					
-		$('.building .subject').css("font-size", Math.min(importantScale * 2, 160))
-		$('.building .statusInWords ').css("font-size", Math.min(importantScale, 80))
-		$('.building .changeSetComment').css("font-size", Math.min(importantScale, 80))
-
+		$('.building .subject').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * subjectScaleMultiplier), fontAdjustIncrement: 1});
+		$('.building .statusInWords').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * statusScaleMultiplier), fontAdjustIncrement: 1});
+		$('.building .changeSetComment').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * commentScaleMultiplier), fontAdjustIncrement: 1});
+		
+		
+		$('.building').filter(':not(:animated)').effect("pulsate", 200);		
+	
 	} else {
-		windowHeight = $(window).height();;
-
+		
 		pixelsPerItem = (windowHeight) / boringItems;
-		itemScale = pixelsPerItem / 6;
+		itemScale = pixelsPerItem / itemParts;
 
-		$('.success .subject').css("font-size", itemScale * 2)
-		$('.success .statusInWords ').css("font-size", itemScale)
-		$('.success .changeSetComment').css("font-size", itemScale)
+		$('.success .subject').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (itemScale * subjectScaleMultiplier), fontAdjustIncrement: 1});
+		$('.success .statusInWords').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (itemScale * statusScaleMultiplier), fontAdjustIncrement: 1});
+		$('.success .changeSetComment').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (itemScale * commentScaleMultiplier), fontAdjustIncrement: 1});
 	}
 }
 
@@ -99,10 +113,14 @@ function hudson() {
      baseUrl: $('#' + $(this).attr('id') + ' a').attr('href'),
      id: '#' + $(this).attr('id'),
      onload: function(response) {
-       var status = eval('(' + response.responseText + ')');
-       clearClasses($(this.id), status);
-       $(this.id).addClass(classToUpdate(status));               
-       var statusInWords = message(status) + '&nbsp;' + duration(status, this.id) + differentialTime(status.timestamp);
+	   var status = JSON.parse(response.responseText);
+	  
+	   updateClass(status, $(this.id))
+	   
+			   
+	  
+	 	   
+		var statusInWords = message(status) + '&nbsp;' + duration(status, this.id) + differentialTime(status.timestamp);
        $(this.id + ' span.statusInWords').html(statusInWords);
 	    var changeSetComment = status.changeSet.items.length > 0 ? status.changeSet.items[0].comment : "Missing Comment!";
        $(this.id + " span.changeSetComment").html(changeSetComment.substring(0, 140));
@@ -111,15 +129,53 @@ function hudson() {
        {
          $(this.id + " span.claim").html("Claimed by " + claim.claimedBy + " because " + claim.reason);
        }
+	   if(!claim)
+	   {
+		 $(this.id + " span.claim").css('display', 'hidden');
+
+	   }
     }
    });
   });
 }
 
+function hudsonFull() {
+  $('.hudson').each(function () {
+    GM_xmlhttpRequest({
+     method: 'GET',
+     url: $('#' + $(this).attr('id') + ' a').attr('href') + 'api/json',
+     baseUrl: $('#' + $(this).attr('id') + ' a').attr('href'),
+     id: '#' + $(this).attr('id'),
+     onload: function(response) {
+	    var status = JSON.parse(response.responseText);
+		if(status.healthReport) {
+			$(this.id + ' span.healthScore').html( status.healthReport[0].score );
+			$(this.id + ' span.healthScore').css("opacity", (status.healthReport[0].score / 100 ));
+			$(this.id + ' span.healthScore').css("font-size", $(this.id + ' span.statusInWords').css("font-size") );
+		}
+	 }
+   });
+  });
+}
+
+function updateClass(status, id) {
+	if (status.building) {
+		if(!id.hasClass('building')) {
+			appendBuilding(id);
+		}
+		return;
+	}
+	clearClasses(id, status);
+    id.addClass(classToUpdate(status));	
+	return;
+}
+function appendBuilding(id) {
+	id.addClass('building');
+	
+}
+
 function classToUpdate(status, url) {
-    if (status.building) {
-        return 'building';
-    } else if (isSuccess(status)) {
+	if (isSuccess(status)) {
         return 'success';
     } else {
         return 'failure';

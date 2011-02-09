@@ -55,7 +55,7 @@
         left:0pt;
         position:absolute;
         top:0px;
-        width:1100px;
+        width:1280px;
         z-index:99;
     }
 
@@ -86,18 +86,26 @@
     .failure .statusDetails {
         color: #880000;
     }
+	
+	.healthScore {
+		color: white;
+		float: right;
+		padding-right: 5px;
+		
+		
+	}
 
     .building {
-        color: #888888;
+       
     }
     .building a {
-        color: #CCCCCC;
+      
     }
     .building .statusDetails {
-        color: #666666;
+    
     }
     .buildingFromFailedBuild {
-        background-color: #770000;
+  
     }
     .logo {
     }

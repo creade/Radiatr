@@ -1,0 +1,23 @@
+Special thanks to Dave Yeung and Fabio Pereira.
+
+Your html should be formatted as follows:
+
+<html>
+	<link rel="stylesheet" rev="stylesheet" href="radiatr.css" media="screen">
+	<head><title>Hudson Radiatr</title></head>
+	<body>
+		<div id="statuses">
+
+			<div id="[build id]" class="status hudson">
+				<a class="subject" href="[build url]">[build name]</a>
+				<br/>
+				<span class="statusInWords"></span>
+				<span class="healthScore"></span><br/>
+				<span class="changeSetComment"></span><br />
+				<span class="claim"></span>
+			</div>
+		
+		</div>
+	</body>
+</html>
+
