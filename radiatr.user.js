@@ -27,7 +27,8 @@ function scale() {
 	var windowHeight = $(window).height();
 	
 	//percentage of screen to devote to Building and Failed builds:
-	var precedence = .2;
+	var sizer = 0.2;
+	var precedence = 0.65;
 	var subjectScaleMultiplier = 4;
 	var statusScaleMultiplier = 2;
 	var commentScaleMultiplier = 3;
@@ -36,13 +37,12 @@ function scale() {
 					commentScaleMultiplier;
 	
 	
-	if (importantItems != 0) {
-		
-		pixelsPerImportant = (windowHeight * precedence ) / importantItems;
-		importantScale = pixelsPerImportant / itemParts;
+	if (importantItems !== 0) {
+		var pixelsPerImportant = (windowHeight / (importantItems + boringItems)) * (1 + sizer);
+		var pixelsPerBoring = (windowHeight - (importantItems * pixelsPerImportant)) / boringItems;
 
-		pixelsPerBoring = (windowHeight * (1 - precedence) ) / boringItems;
-		boringScale = pixelsPerBoring / itemParts;
+		var importantScale = pixelsPerImportant / itemParts;
+		var boringScale = pixelsPerBoring / itemParts;
 
 						
 		$('.success .subject').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (boringScale * subjectScaleMultiplier), fontAdjustIncrement: 1});
@@ -60,7 +60,7 @@ function scale() {
 		$('.building .changeSetComment').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * commentScaleMultiplier), fontAdjustIncrement: 1});
 		
 		
-		$('.building').filter(':not(:animated)').effect("pulsate", 800);		
+		$('.building').filter(':not(:animated)').effect("pulsate", {times: 1}, 2000);		
 	
 	} else {
 		
