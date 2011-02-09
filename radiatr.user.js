@@ -27,7 +27,7 @@ function scale() {
 	var windowHeight = $(window).height();
 	
 	//percentage of screen to devote to Building and Failed builds:
-	var precedence = .65;
+	var precedence = .9;
 	var subjectScaleMultiplier = 4;
 	var statusScaleMultiplier = 2;
 	var commentScaleMultiplier = 3;
@@ -60,7 +60,7 @@ function scale() {
 		$('.building .changeSetComment').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * commentScaleMultiplier), fontAdjustIncrement: 1});
 		
 		
-		$('.building').filter(':not(:animated)').effect("pulsate", 200);		
+		$('.building').filter(':not(:animated)').effect("pulsate", 800);		
 	
 	} else {
 		
