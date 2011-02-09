@@ -67,9 +67,15 @@
     abbr {
         border-bottom:none;
     }
+
+    .disabled a {
+	color: #666666;
+    }
+
     .success {
         color: #00AA00;
     }
+
     .success .subject {
         color: #00FF00;
     }

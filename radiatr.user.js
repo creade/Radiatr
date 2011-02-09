@@ -23,7 +23,7 @@ function refresh() {
 
 function scale() {
 	var importantItems = $('.failure .subject').length + $('.building .subject').length;
-	var boringItems = $('.success .subject').length;
+	var boringItems = $('.success .subject').length + $('.disabled .subject').length;
 	var windowHeight = $(window).height();
 	
 	//percentage of screen to devote to Building and Failed builds:
@@ -54,6 +54,9 @@ function scale() {
 		$('.failure .statusInWords').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * statusScaleMultiplier), fontAdjustIncrement: 1});
 		$('.failure .changeSetComment').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * commentScaleMultiplier), fontAdjustIncrement: 1});
 
+		$('.disabled .subject').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * subjectScaleMultiplier), fontAdjustIncrement: 1});
+		$('.disabled .statusInWords').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * statusScaleMultiplier), fontAdjustIncrement: 1});
+		$('.disabled .changeSetComment').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * commentScaleMultiplier), fontAdjustIncrement: 1});
 					
 		$('.building .subject').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * subjectScaleMultiplier), fontAdjustIncrement: 1});
 		$('.building .statusInWords').fitTextToHeight({verticallyCentered: false, maxScrollHeight: (importantScale * statusScaleMultiplier), fontAdjustIncrement: 1});
@@ -87,7 +90,7 @@ function ping() {
               $('#' + this.id + ' span.statusInWords').text('is Online');
           }
           else {
-              $('#' + this.id).addClass('failure').removeClass('success');
+              $('#' + this.id).addClass('disabled').removeClass('success');
               $('#' + this.id + ' span.statusInWords').text('is Offline');
           }
       }
@@ -113,6 +116,11 @@ function hudson() {
      baseUrl: $('#' + $(this).attr('id') + ' a').attr('href'),
      id: '#' + $(this).attr('id'),
      onload: function(response) {
+	   if (response.status === 404) {
+		$(this.id).addClass('disabled');
+	   }
+
+
 	   var status = JSON.parse(response.responseText);
 	  
 	   updateClass(status, $(this.id))
