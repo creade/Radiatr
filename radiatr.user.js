@@ -27,7 +27,7 @@ function scale() {
 	var windowHeight = $(window).height();
 	
 	//percentage of screen to devote to Building and Failed builds:
-	var precedence = .9;
+	var precedence = .2;
 	var subjectScaleMultiplier = 4;
 	var statusScaleMultiplier = 2;
 	var commentScaleMultiplier = 3;
